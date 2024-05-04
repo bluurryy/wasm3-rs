@@ -65,7 +65,7 @@ fn gen_bindings() {
         ))
         .arg("-Dd_m3LogOutput=0")
         .arg("-Iwasm3/source");
-    let status = bindgen.status().expect("Unable to generate bindings");
+    let status = bindgen.status().unwrap_or_else(|error| panic!("Unable to generate bindings: {}", error.to_string()));
     if !status.success() {
         panic!("Failed to run bindgen: {:?}", status);
     }
