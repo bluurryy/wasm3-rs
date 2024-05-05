@@ -59,11 +59,6 @@ impl ParsedModule {
         data
     }
 
-    /// Compile all functions in the module.
-    pub fn compile(&mut self) {
-        unsafe { ffi::m3_FreeModule(self.raw.0.as_ptr()) };
-    }
-
     /// The environment this module was parsed in.
     pub fn environment(&self) -> &Environment {
         &self.env
@@ -224,6 +219,11 @@ impl<'rt> Module<'rt> {
     /// The name of this module.
     pub fn name(&self) -> &str {
         unsafe { cstr_to_str(ffi::m3_GetModuleName(self.raw)) }
+    }
+
+    /// Compile all functions in the module.
+    pub fn compile(&mut self) {
+        unsafe { ffi::m3_FreeModule(self.raw) };
     }
 
     /// Links wasi to this module.
