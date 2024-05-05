@@ -59,6 +59,11 @@ impl ParsedModule {
         data
     }
 
+    /// Compile all functions in the module.
+    pub fn compile(&mut self) {
+        unsafe { ffi::m3_FreeModule(self.raw.0.as_ptr()) };
+    }
+
     /// The environment this module was parsed in.
     pub fn environment(&self) -> &Environment {
         &self.env
