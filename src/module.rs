@@ -222,8 +222,8 @@ impl<'rt> Module<'rt> {
     }
 
     /// Compile all functions in the module.
-    pub fn compile(&mut self) {
-        unsafe { ffi::m3_FreeModule(self.raw) };
+    pub fn compile(&mut self) -> Result<()> {
+        unsafe { Error::from_ffi_res(ffi::m3_CompileModule(self.raw)) }
     }
 
     /// Links wasi to this module.
