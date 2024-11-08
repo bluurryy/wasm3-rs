@@ -38,6 +38,8 @@ pub trait WasmArgs {
     fn sealed_() -> private::Seal;
     #[doc(hidden)]
     fn append_signature(buffer: &mut Vec<cty::c_char>);
+    #[doc(hidden)]
+    unsafe fn call(self, func: *mut ffi::M3Function) -> ffi::M3Result;
 }
 
 impl WasmArg for i32 {}
@@ -204,6 +206,10 @@ impl WasmArgs for () {
     }
     #[doc(hidden)]
     fn append_signature(_buffer: &mut Vec<cty::c_char>) {}
+    #[doc(hidden)]
+    unsafe fn call(self, func: *mut ffi::M3Function) -> ffi::M3Result {
+        ffi::m3_CallV(func)
+    }
 }
 
 /// Unary functions
@@ -230,6 +236,10 @@ where
     #[doc(hidden)]
     fn append_signature(buffer: &mut Vec<cty::c_char>) {
         buffer.push(T::SIGNATURE as cty::c_char);
+    }
+    #[doc(hidden)]
+    unsafe fn call(self, func: *mut ffi::M3Function) -> ffi::M3Result {
+        ffi::m3_CallV(func, self)
     }
 }
 
@@ -280,6 +290,14 @@ macro_rules! args_impl {
                 $(
                     buffer.push($types::SIGNATURE as cty::c_char);
                 )*
+            }
+
+            #[doc(hidden)]
+            unsafe fn call(self, func: *mut ffi::M3Function) -> ffi::M3Result {
+                #[allow(non_snake_case)]
+                let ($($types,)*) = self;
+
+                ffi::m3_CallV(func, $($types),*)
             }
         }
     };

@@ -99,6 +99,13 @@ where
             None
         }
     }
+
+    /// Calls this function with the given parameters.
+    pub fn call_tuple(&self, args: Args) -> Result<Ret> {
+        let result = unsafe { args.call(self.raw.as_ptr()) };
+        Error::from_ffi_res(result)?;
+        self.get_call_result()
+    }
 }
 
 impl<'rt, Args, Ret> Function<'rt, Args, Ret>
